@@ -3,7 +3,7 @@ export default async function handler(req, res) {
     if (!mssv) return res.status(400).send("Thiếu MSSV");
 
     const targetUrl = `https://ctsv.hust.edu.vn/ctsv-img/getimagebystudentid?mssv=${mssv}`;
-
+    console.log(mssv);
     try {
         const response = await fetch(targetUrl);
         const data = await response.text();
