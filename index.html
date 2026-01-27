@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HUST Student Image</title>
+    <style>
+        body { font-family: sans-serif; background: #1a1a1a; color: #fff; text-align: center; padding-top: 50px; }
+        .box { background: #2d2d2d; padding: 25px; border-radius: 12px; display: inline-block; border: 1px solid #444; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #555; background: #333; color: #fff; }
+        button { padding: 10px 20px; background: #c02135; color: #fff; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        #result { margin-top: 20px; }
+        img { max-width: 300px; border: 3px solid #444; border-radius: 8px; display: none; margin-bottom: 10px; }
+        #downloadBtn { background: #28a745; display: none; padding: 8px 15px; text-decoration: none; color: #fff; border-radius: 5px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h2>HUST Student Image</h2>
+        <input type="text" id="mssv" placeholder="Nhập MSSV..." onkeyup="if(event.key==='Enter') viewImage()">
+        <button onclick="viewImage()">Xem ảnh</button>
+        <div id="result">
+            <p id="ld" style="display:none">Đang tải...</p>
+            <img id="avatar" src="">
+            <br>
+            <a id="downloadBtn">Tải ảnh .JPG</a>
+        </div>
+    </div>
+
+    <script>
+    async function viewImage() {
+        const id = document.getElementById('mssv').value.trim();
+        const img = document.getElementById('avatar');
+        const ld = document.getElementById('ld');
+        const btn = document.getElementById('downloadBtn');
+
+        if (!id) return;
+        img.style.display = 'none';
+        btn.style.display = 'none';
+        ld.style.display = 'block';
+
+        try {
+            const res = await fetch(`/api/get-img?mssv=${id}`);
+            const data = await res.text();
+            const cleanB64 = data.replace(/"/g, '');
+
+            if (cleanB64 && cleanB64 !== "chua co anh") {
+                const src = "data:image/jpeg;base64," + cleanB64;
+                img.src = src;
+                img.style.display = 'inline-block';
+                
+                btn.style.display = 'inline-block';
+                btn.href = src;
+                btn.download = id + ".jpg";
+            } else {
+                alert("Không tìm thấy ảnh hoặc MSSV sai!");
+            }
+        } catch (e) {
+            alert("Lỗi kết nối!");
+        } finally {
+            ld.style.display = 'none';
+        }
+    }
+    </script>
+</body>
+</html>
